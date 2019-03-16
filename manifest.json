@@ -13,7 +13,8 @@
   },
   "background": {
     "scripts": [
-      "background_scripts/browser-polyfill.min.js",
+      "vendor/browser-polyfill.min.js",
+      "background_scripts/executeScript-helper.js",
       "background_scripts/background.js"
     ]
   }

@@ -1,20 +1,15 @@
 function logTabs(tabs) {
   for (let tab of tabs) {
-    // tab.url requires the `tabs` permission
-    console.log(tab);
-
-    browser.tabs.executeScript(tab.id, {
-      file: "/vendor/diff_match_patch.js"
-    }, function () {
-      browser.tabs.executeScript(tab.id, {
-        file: "/vendor/Readability.js"
-      }, function () {
-        browser.tabs.executeScript(tab.id, {
-          file: "/content_scripts/content.js"
-        }, function () {
-          console.log(`Loaded content_scripts`);
-        });
-      });
+    executeScripts(
+      tab.id,
+      [
+        { file: "/vendor/browser-polyfill.min.js" },
+        { file: "/vendor/diff_match_patch.js" },
+        { file: "/vendor/Readability.js" },
+        { file: "/content_scripts/content.js" }
+      ]
+    ).then(() => {
+      console.log(`Loaded revisionist.`);
     });
   }
 }
@@ -34,3 +29,14 @@ function onError(error) {
   querying.then(logTabs, onError);
 }
 browser.browserAction.onClicked.addListener(onClicked);
+
+
+/**
+ * Add a listener on the browser messages.
+ */
+function handleMessage(request, sender, sendResponse) {
+  console.log("Message from the content script: " +
+    request.cmd);
+  sendResponse({response: "Response from background script"});
+}
+browser.runtime.onMessage.addListener(handleMessage);
