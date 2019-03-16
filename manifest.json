@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Revisionist Extension",
+  "description" : "Revisionist Browser Extension",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "contextMenus"
+  ],
+  "browser_action": {
+    "default_icon": "revisionist_extension.png"
+  },
+  "background": {
+    "scripts": [
+      "background_scripts/browser-polyfill.min.js",
+      "background_scripts/background.js"
+    ]
+  }
+}
