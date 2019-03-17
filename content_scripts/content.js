@@ -120,11 +120,3 @@ function notifyBackgroundPage(message) {
   var sending = browser.runtime.sendMessage(message);
   sending.then(handleResponse, handleError);
 }
-
-$( document ).ready(function() {
-  var url = window.location.href;
-  notifyBackgroundPage({
-    cmd: 'fetch-revisions',
-    url
-  });
-});

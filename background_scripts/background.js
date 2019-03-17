@@ -3,14 +3,13 @@ function logTabs(tabs) {
     executeScripts(
       tab.id,
       [
-        { file: "/vendor/browser-polyfill.min.js" },
         { file: "/vendor/diff_match_patch.js" },
         { file: "/vendor/Readability.js" },
-        { file: "/vendor/jquery.3.2.1.jquery.min.js" },
         { file: "/content_scripts/content.js" }
       ]
     ).then(() => {
-      console.log(`Loaded revisionist.`);
+      console.log(`fetch-revisions in the background for ${tab.url}`);
+      fetch_revisions(tab.url);
     });
   }
 }
@@ -70,8 +69,8 @@ function parse_memento(data) {
   return entries;
 }
 
-function fetch_revisions(request) {
-  var timemap_url = "https://arquivo.pt/wayback/timemap/*/" + request.url;
+function fetch_revisions(url) {
+  var timemap_url = "https://arquivo.pt/wayback/timemap/*/" + url;
   console.log('timemap ' + timemap_url);
 
   fetch(timemap_url).then(function(response) {
@@ -127,7 +126,8 @@ function notifyActiveTab(message) {
   var querying = browser.tabs.query({
     currentWindow: true,
     active: true
-  }, function (tabs) {
+  });
+  querying.then((tabs) => {
     var sending = browser.tabs.sendMessage(tabs[0].id, message);
     sending.then(handleResponse, handleError);
   });
