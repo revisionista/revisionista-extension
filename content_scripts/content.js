@@ -13,8 +13,10 @@ var head_template = `
 
 var body_template = `
   <article id="readability-container">
-    <h1 id="readability-title">${article.title}</h1>
-    <div id="readability-content">${article.content}</div>
+    <h1 id="readability-1-title">${article.title}</h1>
+    <div id="readability-1-content">${article.content}</div>
+    <h1 id="readability-2-title"></h1>
+    <div id="readability-2-content"></div>
   </article>
 `
 
@@ -27,9 +29,9 @@ document.body.innerHTML = body_template;
 var dmp = new diff_match_patch();
 
 function diff_title() {
-  console.log('diff title');
-  var text1 = document.getElementById('readability-title').textContent.trim();
-  var text2 = document.getElementById('readability-title').textContent.trim();
+  console.log('diff title start');
+  var text1 = document.getElementById('readability-1-title').textContent.trim();
+  var text2 = document.getElementById('readability-2-title').textContent.trim();
 
   var ms_start = (new Date()).getTime();
   var d = dmp.diff_main(text1, text2);
@@ -38,7 +40,9 @@ function diff_title() {
   dmp.diff_cleanupSemantic(d);
   // dmp.diff_cleanupEfficiency(d);
   var ds = dmp.diff_prettyHtml(d);
-  document.getElementById('readability-title').innerHTML = ds;
+  document.getElementById('readability-1-title').innerHTML = ds;
+  document.getElementById('readability-2-title').innerHTML = '';
+  console.log('diff title end');
 }
 
 // get array of descendant elements
@@ -46,12 +50,8 @@ function getDescendantElements(parent) {
   return [].slice.call(parent.getElementsByTagName('*'));
 }
 
-function diff_content() {
-  console.log('diff content');
-  var text1 = document.getElementById('readability-content');
-  var text2 = document.getElementById('readability-content');
-
-  var descendants = getDescendantElements(text1);
+function replaceTags(parent) {
+  var descendants = getDescendantElements(parent);
   var i, e, d;
   for (i = 0; i < descendants.length; ++i) {
     e = descendants[i];
@@ -65,6 +65,15 @@ function diff_content() {
       e.appendChild(d);
     }
   }
+}
+
+function diff_content() {
+  console.log('diff content start');
+  var text1 = document.getElementById('readability-1-content');
+  var text2 = document.getElementById('readability-2-content');
+
+  replaceTags(text1);
+  replaceTags(text2);
 
   text1 = text1.textContent.trim();
   text2 = text2.textContent.trim();
@@ -76,7 +85,9 @@ function diff_content() {
   dmp.diff_cleanupSemantic(d);
   // dmp.diff_cleanupEfficiency(d);
   var ds = dmp.diff_prettyHtml(d);
-  document.getElementById('readability-content').innerHTML = '<p>' + ds + '</p>';
+  document.getElementById('readability-1-content').innerHTML = '<p>' + ds + '</p>';
+  document.getElementById('readability-2-content').innerHTML = '';
+  console.log('diff content end');
 }
 
 /*
@@ -121,16 +132,19 @@ $( document ).ready(function() {
         url: url,
         context: document.body
       }).done(function(data) {
-        console.log(data);
+        console.log(`Readability start`);
+        var p = new DOMParser();
+        var doc = p.parseFromString(data, 'text/html');
+        var article = new Readability(doc).parse();
+        console.log(`Readability end`)
+        $('#readability-2-title').text(article.title);
+        $('#readability-2-content').html(article.content);
+        diff_title();
+        diff_content();
       });
     }
   });
 });
-
-// $( this ).addClass( "done" );
-// diff_title();
-// diff_content();
-
 
 
 function handleResponse(message) {
