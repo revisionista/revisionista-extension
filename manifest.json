@@ -7,7 +7,8 @@
     "tabs",
     "activeTab",
     "contextMenus",
-    "<all_urls>"
+    "<all_urls>",
+    "*://arquivo.pt/*"
   ],
   "browser_action": {
     "default_icon": "revisionist_extension.png"
@@ -16,8 +17,17 @@
     "scripts": [
       "vendor/browser-polyfill.min.js",
       "background_scripts/executeScript-helper.js",
+      "vendor/Readability.js",
       "background_scripts/background.js"
     ]
   },
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "vendor/browser-polyfill.min.js"
+    ]
+  }],
   "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/*; object-src 'self';"
 }

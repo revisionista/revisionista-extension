@@ -1,7 +1,7 @@
 console.log(`Readability start`);
 var documentClone = document.cloneNode(true);
 var article = new Readability(documentClone).parse();
-console.log(`Readability end`)
+console.log(`Readability end`);
 
 // Template for reader view.
 var head_template = `
@@ -90,61 +90,21 @@ function diff_content() {
   console.log('diff content end');
 }
 
-/*
- * Parse the Memento response.
+/**
+ * Add a listener on the browser messages.
  */
-function parse_memento(data) {
-  if (data.length == 0) {
-    throw new Error("input must not be of zero length");
+function handleMessage(request, sender, sendResponse) {
+  console.log(request);
+  sendResponse({response: "Response from content script"});
+  if (request.cmd === 'response-revisions') {
+    var article = request.article;
+    document.getElementById('readability-2-title').textContent = article.title;
+    document.getElementById('readability-2-content').innerHTML = article.content;
+    diff_title();
+    diff_content();
   }
-
-  var entries = [];
-  var items = data.split('\n')
-  $.each(items, function(index, value) {
-    var memento = value.split(';');
-    if (memento.length < 2) {
-      throw new Error("memento could not be split on ';'");
-    }
-    var url = memento[0].replace(/<(.*)>/, '$1').trim();
-    var name = memento[1].replace(/rel="(.*)"/, '$1').trim();
-    if (memento.length > 2 && name === "memento") {
-      var datetime = memento[2].replace(/datetime="(.*)"/, '$1').trim();
-      entries.push({'url': url, 'name': name, 'datetime': datetime});
-    }
-  });
-
-  return entries;
 }
-
-$( document ).ready(function() {
-  var url = "https://arquivo.pt/wayback/timemap/*/" + window.location.href;
-  console.log(url);
-  $.ajax({
-    url: url,
-    context: document.body
-  }).done(function(data) {
-    var entries = parse_memento(data);
-
-    if (entries.length > 0) {
-      var url = entries[0].url.replace("https://arquivo.pt/wayback/", "https://arquivo.pt/noFrame/replay/");
-      console.log(url);
-      $.ajax({
-        url: url,
-        context: document.body
-      }).done(function(data) {
-        console.log(`Readability start`);
-        var p = new DOMParser();
-        var doc = p.parseFromString(data, 'text/html');
-        var article = new Readability(doc).parse();
-        console.log(`Readability end`)
-        $('#readability-2-title').text(article.title);
-        $('#readability-2-content').html(article.content);
-        diff_title();
-        diff_content();
-      });
-    }
-  });
-});
+browser.runtime.onMessage.addListener(handleMessage);
 
 
 function handleResponse(message) {
@@ -155,11 +115,16 @@ function handleError(error) {
   console.log(`Error: ${error}`);
 }
 
-/**
- * Send a message to the browser (extension).
- */
-var sending = browser.runtime.sendMessage({
-  cmd: 'open-reader',
-  article
+function notifyBackgroundPage(message) {
+  console.log(message);
+  var sending = browser.runtime.sendMessage(message);
+  sending.then(handleResponse, handleError);
+}
+
+$( document ).ready(function() {
+  var url = window.location.href;
+  notifyBackgroundPage({
+    cmd: 'fetch-revisions',
+    url
+  });
 });
-sending.then(handleResponse, handleError);
