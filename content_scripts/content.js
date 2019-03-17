@@ -1,7 +1,6 @@
 console.log(`Readability start`);
 var documentClone = document.cloneNode(true);
 var article = new Readability(documentClone).parse();
-console.log(article);
 console.log(`Readability end`)
 
 // Template for reader view.
@@ -41,7 +40,6 @@ function diff_title() {
   var ds = dmp.diff_prettyHtml(d);
   document.getElementById('readability-title').innerHTML = ds;
 }
-diff_title()
 
 // get array of descendant elements
 function getDescendantElements(parent) {
@@ -80,7 +78,60 @@ function diff_content() {
   var ds = dmp.diff_prettyHtml(d);
   document.getElementById('readability-content').innerHTML = '<p>' + ds + '</p>';
 }
-diff_content();
+
+/*
+ * Parse the Memento response.
+ */
+function parse_memento(data) {
+  if (data.length == 0) {
+    throw new Error("input must not be of zero length");
+  }
+
+  var entries = [];
+  var items = data.split('\n')
+  $.each(items, function(index, value) {
+    var memento = value.split(';');
+    if (memento.length < 2) {
+      throw new Error("memento could not be split on ';'");
+    }
+    var url = memento[0].replace(/<(.*)>/, '$1').trim();
+    var name = memento[1].replace(/rel="(.*)"/, '$1').trim();
+    if (memento.length > 2 && name === "memento") {
+      var datetime = memento[2].replace(/datetime="(.*)"/, '$1').trim();
+      entries.push({'url': url, 'name': name, 'datetime': datetime});
+    }
+  });
+
+  return entries;
+}
+
+$( document ).ready(function() {
+  var url = "https://arquivo.pt/wayback/timemap/*/" + window.location.href;
+  console.log(url);
+  $.ajax({
+    url: url,
+    context: document.body
+  }).done(function(data) {
+    var entries = parse_memento(data);
+
+    if (entries.length > 0) {
+      var url = entries[0].url.replace("https://arquivo.pt/wayback/", "https://arquivo.pt/noFrame/replay/");
+      console.log(url);
+      $.ajax({
+        url: url,
+        context: document.body
+      }).done(function(data) {
+        console.log(data);
+      });
+    }
+  });
+});
+
+// $( this ).addClass( "done" );
+// diff_title();
+// diff_content();
+
+
 
 function handleResponse(message) {
   console.log(`Message from the background script:  ${message.response}`);

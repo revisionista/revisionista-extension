@@ -6,6 +6,7 @@ function logTabs(tabs) {
         { file: "/vendor/browser-polyfill.min.js" },
         { file: "/vendor/diff_match_patch.js" },
         { file: "/vendor/Readability.js" },
+        { file: "/vendor/jquery.3.2.1.jquery.min.js" },
         { file: "/content_scripts/content.js" }
       ]
     ).then(() => {
