@@ -34,7 +34,7 @@ function diff_title() {
   var text2 = document.getElementById('readability-2-title').textContent.trim();
 
   var ms_start = (new Date()).getTime();
-  var d = dmp.diff_main(text1, text2);
+  var d = dmp.diff_main(text2, text1);
   var ms_end = (new Date()).getTime();
 
   dmp.diff_cleanupSemantic(d);
@@ -79,7 +79,7 @@ function diff_content() {
   text2 = text2.textContent.trim();
 
   var ms_start = (new Date()).getTime();
-  var d = dmp.diff_main(text1, text2);
+  var d = dmp.diff_main(text2, text1);
   var ms_end = (new Date()).getTime();
 
   dmp.diff_cleanupSemantic(d);
