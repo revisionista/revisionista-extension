@@ -72,11 +72,12 @@ function diff_content() {
   var text1 = document.getElementById('readability-1-content');
   var text2 = document.getElementById('readability-2-content');
 
+  // replace tags by actual linefeeds and collapse
   replaceTags(text1);
   replaceTags(text2);
 
-  text1 = text1.textContent.trim();
-  text2 = text2.textContent.trim();
+  text1 = text1.textContent.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
+  text2 = text2.textContent.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
 
   var ms_start = (new Date()).getTime();
   var d = dmp.diff_main(text2, text1);

@@ -3,6 +3,7 @@ function logTabs(tabs) {
     executeScripts(
       tab.id,
       [
+        { file: "/vendor/browser-polyfill.min.js" },
         { file: "/vendor/diff_match_patch.js" },
         { file: "/vendor/Readability.js" },
         { file: "/content_scripts/content.js" }
