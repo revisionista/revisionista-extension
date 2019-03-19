@@ -54,7 +54,7 @@ function parse_memento(data) {
 
   var entries = [];
   var items = data.split('\n')
-  items.forEach(function(item){
+  items.forEach((item) => {
     var memento = item.split(';');
     if (memento.length < 2) {
       throw new Error("memento could not be split on ';'");
@@ -71,51 +71,47 @@ function parse_memento(data) {
 }
 
 function fetch_revisions(url) {
-  var timemap_url = "https://arquivo.pt/wayback/timemap/*/" + url;
-  console.log('timemap ' + timemap_url);
+  var timemap_url = `https://arquivo.pt/wayback/timemap/*/${url}`;
+  console.log(`timemap ${timemap_url}`);
 
-  fetch(timemap_url).then(function(response) {
+  fetch(timemap_url).then((response) => {
     if(response.ok) {
       return response.text();
     }
     throw new Error('Network response was not ok.');
-  }).then(function(links) {
-    console.log('timemap done!');
-
+  }).then((links) => {
     var entries = parse_memento(links);
     if (entries.length > 0) {
       var replay_url = entries[0].url.replace("https://arquivo.pt/wayback/", "https://arquivo.pt/noFrame/replay/");
-      console.log('replay ' + replay_url);
+      console.log(`replay ${replay_url}`);
 
-      fetch(replay_url).then(function(response) {
+      fetch(replay_url).then((response) => {
         if(response.ok) {
           return response.text();
         }
         throw new Error('Network response was not ok.');
-      }).then(function(html_string) {
+      }).then((html_string) => {
         console.log('replay done!');
 
         var p = new DOMParser();
         var doc = p.parseFromString(html_string, 'text/html');
-        console.log(`Readability start`);
         var article = new Readability(doc).parse();
-        console.log(`Readability end`);
 
         notifyActiveTab({
           cmd: 'response-revisions',
           article
         });
-      }).catch(function(error) {
+      }).catch((error) => {
         console.log('There has been a problem with your fetch operation: ', error.message);
       });
     }
-  }).catch(function(error) {
+  }).catch((error) => {
     console.log('There has been a problem with your fetch operation: ', error.message);
   });
 }
 
 function handleResponse(message) {
-  console.log(`Message from the content script:  ${message.response}`);
+  console.log(`Message from the content script: ${message.response}`);
 }
 
 function handleError(error) {

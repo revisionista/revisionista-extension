@@ -1,7 +1,6 @@
-console.log(`Readability start`);
 var documentClone = document.cloneNode(true);
 var article = new Readability(documentClone).parse();
-console.log(`Readability end`);
+var dmp = new diff_match_patch();
 
 // Template for reader view.
 var head_template = `
@@ -26,17 +25,12 @@ document.head.outerHTML = '';
 document.head.innerHTML = head_template;
 document.body.innerHTML = body_template;
 
-var dmp = new diff_match_patch();
-
 function diff_title() {
   console.log('diff title start');
   var text1 = document.getElementById('readability-1-title').textContent.trim();
   var text2 = document.getElementById('readability-2-title').textContent.trim();
 
-  var ms_start = (new Date()).getTime();
   var d = dmp.diff_main(text2, text1);
-  var ms_end = (new Date()).getTime();
-
   dmp.diff_cleanupSemantic(d);
   // dmp.diff_cleanupEfficiency(d);
   var ds = dmp.diff_prettyHtml(d);
@@ -51,16 +45,11 @@ function getDescendantElements(parent) {
 }
 
 function replaceTags(parent) {
-  var descendants = getDescendantElements(parent);
-  var i, e, d;
-  for (i = 0; i < descendants.length; ++i) {
-    e = descendants[i];
-    if (e.tagName === 'SECTION' ||
-        e.tagName === 'MAIN' ||
-        e.tagName === 'DIV' ||
-        e.tagName === 'P' ||
-        e.tagName === 'BLOCKQUOTE') {
-      d = document.createElement('span');
+  const descendants = getDescendantElements(parent);
+  for (let i = 0; i < descendants.length; ++i) {
+    let e = descendants[i];
+    if (['SECTION', 'MAIN', 'DIV', 'P', 'BLOCKQUOTE'].includes(e.tagName)) {
+      let d = document.createElement('span');
       d.textContent = '\n\n';
       e.appendChild(d);
     }
@@ -79,10 +68,7 @@ function diff_content() {
   text1 = text1.textContent.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
   text2 = text2.textContent.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
 
-  var ms_start = (new Date()).getTime();
   var d = dmp.diff_main(text2, text1);
-  var ms_end = (new Date()).getTime();
-
   dmp.diff_cleanupSemantic(d);
   // dmp.diff_cleanupEfficiency(d);
   var ds = dmp.diff_prettyHtml(d);
