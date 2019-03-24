@@ -70,8 +70,18 @@ function parse_memento(data) {
   return entries;
 }
 
+function replay_substitutions(url) {
+  let new_url = url;
+  new_url.replace(
+    "https://arquivo.pt/wayback/",
+    "https://arquivo.pt/noFrame/replay/"
+  );
+  return new_url;
+}
+
 function fetch_revisions(url) {
-  var timemap_url = `https://arquivo.pt/wayback/timemap/*/${url}`;
+  // Using Memento Aggregator
+  var timemap_url = `http://labs.mementoweb.org/timemap/link/${url}`;
   console.log(`timemap ${timemap_url}`);
 
   fetch(timemap_url).then((response) => {
@@ -82,7 +92,7 @@ function fetch_revisions(url) {
   }).then((links) => {
     var entries = parse_memento(links);
     if (entries.length > 0) {
-      var replay_url = entries[0].url.replace("https://arquivo.pt/wayback/", "https://arquivo.pt/noFrame/replay/");
+      var replay_url = replay_substitutions(entries[0].url);
       console.log(`replay ${replay_url}`);
 
       fetch(replay_url).then((response) => {
