@@ -16,6 +16,7 @@ var body_template = `
     <div id="readability-1-content">${article.content}</div>
     <h1 id="readability-2-title"></h1>
     <div id="readability-2-content"></div>
+    <i><p id="readability-datetime"></p></i>
   </article>
 `
 
@@ -84,6 +85,8 @@ function handleMessage(request, sender, sendResponse) {
   console.log(request);
   sendResponse({response: "Response from content script"});
   if (request.cmd === 'response-revisions') {
+    var datetime = request.datetime;
+    document.getElementById('readability-datetime').textContent = `Compared to snapshot from ${datetime}`;
     var article = request.article;
     document.getElementById('readability-2-title').textContent = article.title;
     document.getElementById('readability-2-content').innerHTML = article.content;

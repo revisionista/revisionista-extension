@@ -62,7 +62,7 @@ function parse_memento(data) {
     var url = memento[0].replace(/<(.*)>/, '$1').trim();
     var name = memento[1].replace(/rel="(.*)"/, '$1').trim();
     if (memento.length > 2 && name === "memento") {
-      var datetime = memento[2].replace(/datetime="(.*)"/, '$1').trim();
+      var datetime = memento[2].replace(/datetime="(.*)",/, '$1').trim();
       entries.push({'url': url, 'name': name, 'datetime': datetime});
     }
   });
@@ -93,7 +93,8 @@ function fetch_revisions(url) {
     var entries = parse_memento(links);
     if (entries.length > 0) {
       var replay_url = replay_substitutions(entries[0].url);
-      console.log(`replay ${replay_url}`);
+      var datetime = entries[0].datetime;
+      console.log(`replay ${datetime} ${replay_url}`);
 
       fetch(replay_url).then((response) => {
         if(response.ok) {
@@ -109,6 +110,7 @@ function fetch_revisions(url) {
 
         notifyActiveTab({
           cmd: 'response-revisions',
+          datetime,
           article
         });
       }).catch((error) => {
