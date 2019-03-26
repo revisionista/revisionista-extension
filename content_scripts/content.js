@@ -9,23 +9,33 @@ String.prototype.regexIndexOf = function(regex, startpos) {
 diff_match_patch.prototype.diff_linesToWords_=function(a,b){function c(a){for(var b="",c=0,g=-1,h=d.length;g<a.length-1;){g=a.regexIndexOf("\\W",c);-1==g&&(g=a.length-1);var l=a.substring(c,g+1);(e.hasOwnProperty?e.hasOwnProperty(l):void 0!==e[l])?b+=String.fromCharCode(e[l]):(h==f&&(l=a.substring(c),g=a.length),b+=String.fromCharCode(h),e[l]=h,d[h++]=l);c=g+1}return b}var d=[],e={};d[0]="";var f=4E4,g=c(a);f=65535;var h=c(b);return{chars1:g,chars2:h,lineArray:d}};
 
 function diff_lineMode(text1, text2) {
+  // Scan the text on a line-by-line basis first.
   var a = dmp.diff_linesToChars_(text1, text2);
-  var lineText1 = a.chars1;
-  var lineText2 = a.chars2;
+  text1 = a.chars1;
+  text2 = a.chars2;
   var lineArray = a.lineArray;
-  var diffs = dmp.diff_main(lineText1, lineText2, true);
-  dmp.diff_cleanupSemantic(diffs);
+
+  var diffs = dmp.diff_main(text1, text2, false);
+
+  // Convert the diff back to original text.
   dmp.diff_charsToLines_(diffs, lineArray);
+  // Eliminate freak matches (e.g. blank lines)
+  dmp.diff_cleanupSemantic(diffs);
   return diffs;
 }
 
 function diff_wordMode(text1, text2) {
+  // Scan the text on a line-by-line basis first.
   var a = dmp.diff_linesToWords_(text1, text2);
-  var lineText1 = a.chars1;
-  var lineText2 = a.chars2;
+  text1 = a.chars1;
+  text2 = a.chars2;
   var lineArray = a.lineArray;
-  var diffs = dmp.diff_main(lineText1, lineText2, true);
+
+  var diffs = dmp.diff_main(text1, text2, false);
+
+  // Eliminate freak matches (e.g. blank lines)
   dmp.diff_cleanupSemantic(diffs);
+  // Convert the diff back to original text.
   dmp.diff_charsToLines_(diffs, lineArray);
   return diffs;
 }
