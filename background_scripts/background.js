@@ -36,7 +36,6 @@ browser.browserAction.onClicked.addListener(onClicked);
  * Add a listener on the browser messages.
  */
 function handleMessage(request, sender, sendResponse) {
-  console.log(request);
   if (request.cmd === 'fetch-revisions') {
     sendResponse({response: 'fetch-revisions in the background'});
     fetch_revisions(request);
@@ -102,8 +101,6 @@ function fetch_revisions(url) {
         }
         throw new Error('Network response was not ok.');
       }).then((html_string) => {
-        console.log('replay done!');
-
         var p = new DOMParser();
         var doc = p.parseFromString(html_string, 'text/html');
         var article = new Readability(doc).parse();
@@ -131,7 +128,6 @@ function handleError(error) {
 }
 
 function notifyActiveTab(message) {
-  console.log(message);
   var querying = browser.tabs.query({
     currentWindow: true,
     active: true

@@ -61,7 +61,6 @@ document.head.innerHTML = head_template;
 document.body.innerHTML = body_template;
 
 function diff_title() {
-  console.log('diff title start');
   var text1 = document.getElementById('readability-1-title').textContent.trim();
   var text2 = document.getElementById('readability-2-title').textContent.trim();
 
@@ -69,7 +68,6 @@ function diff_title() {
   var ds = dmp.diff_prettyHtml(d);
   document.getElementById('readability-1-title').innerHTML = ds;
   document.getElementById('readability-2-title').innerHTML = '';
-  console.log('diff title end');
 }
 
 // get array of descendant elements
@@ -77,11 +75,12 @@ function getDescendantElements(parent) {
   return [].slice.call(parent.getElementsByTagName('*'));
 }
 
+const TAGS_TO_REPLACE = ['SECTION', 'MAIN', 'DIV', 'P', 'BLOCKQUOTE'];
 function replaceTags(parent) {
   const descendants = getDescendantElements(parent);
   for (let i = 0; i < descendants.length; ++i) {
     let e = descendants[i];
-    if (['SECTION', 'MAIN', 'DIV', 'P', 'BLOCKQUOTE'].includes(e.tagName)) {
+    if (TAGS_TO_REPLACE.includes(e.tagName)) {
       let d = document.createElement('span');
       d.textContent = '\n\n';
       e.appendChild(d);
@@ -90,7 +89,6 @@ function replaceTags(parent) {
 }
 
 function diff_content() {
-  console.log('diff content start');
   var text1 = document.getElementById('readability-1-content');
   var text2 = document.getElementById('readability-2-content');
 
@@ -105,16 +103,14 @@ function diff_content() {
   var ds = dmp.diff_prettyHtml(d);
   document.getElementById('readability-1-content').innerHTML = '<p>' + ds + '</p>';
   document.getElementById('readability-2-content').innerHTML = '';
-  console.log('diff content end');
 }
 
 /**
  * Add a listener on the browser messages.
  */
 function handleMessage(request, sender, sendResponse) {
-  console.log(request);
-  sendResponse({response: "Response from content script"});
   if (request.cmd === 'response-revisions') {
+    sendResponse({response: "received-revisions"});
     var datetime = request.datetime;
     document.getElementById('readability-datetime').textContent = `Compared to snapshot from ${datetime}`;
     var article = request.article;
@@ -136,7 +132,6 @@ function handleError(error) {
 }
 
 function notifyBackgroundPage(message) {
-  console.log(message);
   var sending = browser.runtime.sendMessage(message);
   sending.then(handleResponse, handleError);
 }
