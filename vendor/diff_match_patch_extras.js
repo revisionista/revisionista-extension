@@ -1,4 +1,6 @@
 (function() {
+
+
   String.prototype.regexIndexOf = function(regex, startpos) {
     var indexOf = this.substring(startpos || 0).search(regex);
     return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
@@ -16,7 +18,7 @@
    *     The zeroth element of the array of unique strings is intentionally blank.
    * @private
    */
-  diff_match_patch.prototype.diff_linesToWords_ = function(text1, text2) {
+  diff_match_patch.prototype.diff_wordsToChars_ = function(text1, text2) {
     var lineArray = [];  // e.g. lineArray[4] == 'Hello\n'
     var lineHash = {};   // e.g. lineHash['Hello\n'] == 4
 
@@ -32,7 +34,7 @@
      * @return {string} Encoded string.
      * @private
      */
-    function diff_linesToCharsMunge_(text) {
+    function diff_wordsToCharsMunge_(text) {
       var chars = '';
       // Walk the text, pulling out a substring for each line.
       // text.split('\n') would would temporarily double our memory footprint.
@@ -68,10 +70,30 @@
     }
     // Allocate 2/3rds of the space for text1, the rest for text2.
     var maxLines = 40000;
-    var chars1 = diff_linesToCharsMunge_(text1);
+    var chars1 = diff_wordsToCharsMunge_(text1);
     maxLines = 65535;
-    var chars2 = diff_linesToCharsMunge_(text2);
+    var chars2 = diff_wordsToCharsMunge_(text2);
     return {chars1: chars1, chars2: chars2, lineArray: lineArray};
   };
+
+
+  /**
+   * Rehydrate the text in a diff from a string of line hashes to real lines of
+   * text.
+   * @param {!Array.<!diff_match_patch.Diff>} diffs Array of diff tuples.
+   * @param {!Array.<string>} lineArray Array of unique strings.
+   * @private
+   */
+  diff_match_patch.prototype.diff_charsToWords_ = function(diffs, lineArray) {
+    for (var i = 0; i < diffs.length; i++) {
+      var chars = diffs[i][1];
+      var text = [];
+      for (var j = 0; j < chars.length; j++) {
+        text[j] = lineArray[chars.charCodeAt(j)];
+      }
+      diffs[i][1] = text.join('');
+    }
+  };
+
 
 })();

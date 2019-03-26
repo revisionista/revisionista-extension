@@ -20,17 +20,17 @@ function diff_lineMode(text1, text2) {
 
 function diff_wordMode(text1, text2) {
   // Scan the text on a line-by-line basis first.
-  var a = dmp.diff_linesToWords_(text1, text2);
+  var a = dmp.diff_wordsToChars_(text1, text2);
   text1 = a.chars1;
   text2 = a.chars2;
   var lineArray = a.lineArray;
 
   var diffs = dmp.diff_main(text1, text2, false);
 
-  // Eliminate freak matches (e.g. blank lines)
-  dmp.diff_cleanupSemantic(diffs);
   // Convert the diff back to original text.
-  dmp.diff_charsToLines_(diffs, lineArray);
+  dmp.diff_charsToWords_(diffs, lineArray);
+  // Eliminate freak matches (e.g. blank lines)
+  // dmp.diff_cleanupSemantic(diffs);
   return diffs;
 }
 
