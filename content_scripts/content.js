@@ -1,12 +1,6 @@
 var documentClone = document.cloneNode(true);
 var article = new Readability(documentClone).parse();
-
 var dmp = new diff_match_patch();
-String.prototype.regexIndexOf = function(regex, startpos) {
-  var indexOf = this.substring(startpos || 0).search(regex);
-  return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
-}
-diff_match_patch.prototype.diff_linesToWords_=function(a,b){function c(a){for(var b="",c=0,g=-1,h=d.length;g<a.length-1;){g=a.regexIndexOf("\\W",c);-1==g&&(g=a.length-1);var l=a.substring(c,g+1);(e.hasOwnProperty?e.hasOwnProperty(l):void 0!==e[l])?b+=String.fromCharCode(e[l]):(h==f&&(l=a.substring(c),g=a.length),b+=String.fromCharCode(h),e[l]=h,d[h++]=l);c=g+1}return b}var d=[],e={};d[0]="";var f=4E4,g=c(a);f=65535;var h=c(b);return{chars1:g,chars2:h,lineArray:d}};
 
 function diff_lineMode(text1, text2) {
   // Scan the text on a line-by-line basis first.

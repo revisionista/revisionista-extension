@@ -4,7 +4,8 @@ function logTabs(tabs) {
       tab.id,
       [
         { file: "/vendor/browser-polyfill.min.js" },
-        { file: "/vendor/diff_match_patch.js" },
+        { file: "/vendor/diff_match_patch_uncompressed.js" },
+        { file: "/vendor/diff_match_patch_extras.js" },
         { file: "/vendor/Readability.js" },
         { file: "/content_scripts/content.js" }
       ]
