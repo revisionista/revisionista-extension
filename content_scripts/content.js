@@ -14,7 +14,7 @@ function diff_lineMode(text1, text2) {
   // Convert the diff back to original text.
   dmp.diff_charsToLines_(diffs, lineArray);
   // Eliminate freak matches (e.g. blank lines)
-  dmp.diff_cleanupSemantic(diffs);
+  dmp.diff_cleanupSemanticLossless(diffs);
   return diffs;
 }
 
@@ -30,7 +30,7 @@ function diff_wordMode(text1, text2) {
   // Convert the diff back to original text.
   dmp.diff_charsToWords_(diffs, lineArray);
   // Eliminate freak matches (e.g. blank lines)
-  // dmp.diff_cleanupSemantic(diffs);
+  dmp.diff_cleanupSemanticLossless(diffs);
   return diffs;
 }
 
