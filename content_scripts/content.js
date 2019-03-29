@@ -18,6 +18,22 @@ function diff_lineMode(text1, text2) {
   return diffs;
 }
 
+function diff_sentenceMode(text1, text2) {
+  // Scan the text on a line-by-line basis first.
+  var a = dmp.diff_sentencesToChars_(text1, text2);
+  text1 = a.chars1;
+  text2 = a.chars2;
+  var lineArray = a.lineArray;
+
+  var diffs = dmp.diff_main(text1, text2, false);
+
+  // Convert the diff back to original text.
+  dmp.diff_charsToSentences_(diffs, lineArray);
+  // Eliminate freak matches (e.g. blank lines)
+  dmp.diff_cleanupSemanticLossless(diffs);
+  return diffs;
+}
+
 function diff_wordMode(text1, text2) {
   // Scan the text on a line-by-line basis first.
   var a = dmp.diff_wordsToChars_(text1, text2);
