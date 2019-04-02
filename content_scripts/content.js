@@ -58,10 +58,11 @@ function diff_charMode(text1, text2) {
 
 // Template for reader view.
 var head_template = `
-  <meta charset="utf-8"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
   <title>${article.title}</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tufte-css/1.4/tufte.min.css"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 `
 
 var body_template = `
@@ -85,7 +86,7 @@ function diff_title() {
   var text2 = document.getElementById('readability-2-title').textContent.trim();
 
   var d = diff_charMode(text2, text1);
-  var ds = dmp.diff_prettyHtml(d);
+  var ds = dmp.diff_prettierHtml(d);
   document.getElementById('readability-1-title').innerHTML = ds;
   document.getElementById('readability-2-title').innerHTML = '';
 }
@@ -120,7 +121,7 @@ function diff_content() {
   text2 = text2.textContent.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
 
   var d = diff_wordMode(text2, text1);
-  var ds = dmp.diff_prettyHtml(d);
+  var ds = dmp.diff_prettierHtml(d);
   document.getElementById('readability-1-content').innerHTML = '<p>' + ds + '</p>';
   document.getElementById('readability-2-content').innerHTML = '';
 }
