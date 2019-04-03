@@ -63,6 +63,22 @@ var head_template = `
   <meta name="description" content="">
   <title>${article.title}</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/tufte-css/1.4/tufte.min.css"/>
+  <style>
+    del {
+      color: #b31d28;
+      background-color: #ffeef0;
+    }
+
+    ins {
+      color: #22863a;
+      background-color: #f0fff4;
+    }
+
+    del + ins {
+      color: #b58900;
+      background-color: #fdf6e3;
+    }
+  </style>
 `
 
 var body_template = `
