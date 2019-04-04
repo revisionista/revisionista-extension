@@ -84,10 +84,18 @@ var head_template = `
 var body_template = `
   <article id="readability-container">
     <h1 id="readability-1-title">${article.title}</h1>
-    <div id="readability-1-content">${article.content}</div>
+    <section id="readability-subtitle">
+    <p>
+      <span class="marginnote"><i id="readability-datetime"></i></span>
+      <span class="marginnote">
+        Green text, is a widely recognizable <ins>added-text</ins> indicator.
+        Red text, is also easily recognized as <del>removed-text</del><ins>removed-text, while Orange text is used to indicate replacement.</ins> 
+      </span>
+    </p>
+    </section>
+    <section id="readability-1-content">${article.content}</section>
     <h1 id="readability-2-title"></h1>
-    <div id="readability-2-content"></div>
-    <i><p id="readability-datetime"></p></i>
+    <section id="readability-2-content"></section>
   </article>
 `
 
@@ -149,7 +157,7 @@ function handleMessage(request, sender, sendResponse) {
   if (request.cmd === 'response-revisions') {
     sendResponse({response: "received-revisions"});
     var datetime = request.datetime;
-    document.getElementById('readability-datetime').textContent = `Compared to snapshot from ${datetime}`;
+    document.getElementById('readability-datetime').textContent = `Snapshot from ${datetime}`;
     var article = request.article;
     document.getElementById('readability-2-title').textContent = article.title;
     document.getElementById('readability-2-content').innerHTML = article.content;
