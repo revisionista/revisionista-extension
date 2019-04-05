@@ -1,3 +1,5 @@
+let fetch_retry = require('fetch-retry');
+
 var replay_url;
 var datetime;
 
@@ -106,7 +108,10 @@ function fetch_revisions(requestDetails) {
   var timemap_url = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
   console.log(`timemap ${timemap_url}`);
 
-  fetch(timemap_url).then((response) => {
+  fetch_retry(timemap_url, {
+    retries: 3,
+    retryDelay: 1000
+  }).then((response) => {
     if (response.ok) {
       return response.text();
     }
@@ -134,7 +139,10 @@ function fetch_revisions(requestDetails) {
 }
 
 function fetch_html(replay_url, datetime) {
-  fetch(replay_url).then((response) => {
+  fetch_retry(replay_url, {
+    retries: 3,
+    retryDelay: 1000
+  }).then((response) => {
     if (response.ok) {
       return response.text();
     }

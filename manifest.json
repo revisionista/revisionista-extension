@@ -18,6 +18,7 @@
     "scripts": [
       "vendor/browser-polyfill.min.js",
       "background_scripts/executeScript-helper.js",
+      "vendor/fetch-retry-browserified.js",
       "vendor/Readability.js",
       "background_scripts/background.js"
     ]
