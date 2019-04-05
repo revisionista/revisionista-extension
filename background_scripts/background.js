@@ -1,12 +1,12 @@
 var fetchRetry = require('fetch-retry');
 
-var replay_url;
+var replayUrl;
 var datetime;
 
 function logResponseHeaders(requestDetails) {
   if (requestDetails.type == 'main_frame') {
-    console.log(`fetch-revisions in the background for ${requestDetails.url}`);
-    fetch_revisions(requestDetails);
+    console.log(`fetchTimemap ${requestDetails.url}`);
+    fetchTimemap(requestDetails);
   }
 }
 
@@ -32,8 +32,8 @@ function logTabs(tabs) {
         {file: "/content_scripts/content.js"}
       ]
     ).then(() => {
-      console.log(`fetch-revisions in the background for ${tab.url}`);
-      fetch_html(replay_url, datetime);
+      console.log(`fetchHtml in the background for ${tab.url}`);
+      fetchReplay(replayUrl, datetime);
     });
   }
 }
@@ -93,7 +93,7 @@ function parse_memento(data) {
   return entries;
 }
 
-function replay_substitutions(url) {
+function replayUrlSubstitutions(url) {
   let new_url = url;
   new_url.replace(
     "https://arquivo.pt/wayback/",
@@ -102,7 +102,7 @@ function replay_substitutions(url) {
   return new_url;
 }
 
-function fetch_revisions(requestDetails) {
+function fetchTimemap(requestDetails) {
   // Using Memento Aggregator
   var timemap_url = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
   console.log(`timemap ${timemap_url}`);
@@ -118,18 +118,12 @@ function fetch_revisions(requestDetails) {
   }).then((links) => {
     var entries = parse_memento(links);
     if (entries.length > 0) {
-      replay_url = replay_substitutions(entries[0].url);
+      replayUrl = replayUrlSubstitutions(entries[0].url);
       datetime = entries[0].datetime;
-      console.log(`replay ${datetime} ${replay_url}`);
-      var querying = browser.tabs.query({
-        currentWindow: true,
-        active: true
-      });
-      querying.then((tabs) => {
-        browser.browserAction.setIcon({
-          tabId: tabs[0].id,
-          path: "revisionist_extension_on.png"
-        });
+      console.log(`replay ${replayUrl} ${datetime}`);
+      browser.browserAction.setIcon({
+        tabId: requestDetails.tabId,
+        path: "revisionist_extension_on.png"
       });
     }
   }).catch((error) => {
@@ -137,7 +131,7 @@ function fetch_revisions(requestDetails) {
   });
 }
 
-function fetch_html(replay_url, datetime) {
+function fetchReplay(replay_url, datetime) {
   fetchRetry(replay_url, {
     retries: 3,
     retryDelay: 1000
