@@ -1,17 +1,38 @@
+var replay_url;
+var datetime;
+
+function logResponseHeaders(requestDetails) {
+  if (requestDetails.originUrl == undefined) {
+    console.log(`fetch-revisions in the background for ${requestDetails.url}`);
+    fetch_revisions(requestDetails);
+  }
+}
+
+function startListening() {
+  console.log("startListening()")
+  browser.webRequest.onCompleted.addListener(
+    logResponseHeaders,
+    {urls: ["<all_urls>"]},
+    ["responseHeaders"]
+  );
+}
+
+startListening();
+
 function logTabs(tabs) {
   for (let tab of tabs) {
     executeScripts(
       tab.id,
       [
-        { file: "/vendor/browser-polyfill.min.js" },
-        { file: "/vendor/diff_match_patch_uncompressed.js" },
-        { file: "/vendor/diff_match_patch_extras.js" },
-        { file: "/vendor/Readability.js" },
-        { file: "/content_scripts/content.js" }
+        {file: "/vendor/browser-polyfill.min.js"},
+        {file: "/vendor/diff_match_patch_uncompressed.js"},
+        {file: "/vendor/diff_match_patch_extras.js"},
+        {file: "/vendor/Readability.js"},
+        {file: "/content_scripts/content.js"}
       ]
     ).then(() => {
       console.log(`fetch-revisions in the background for ${tab.url}`);
-      fetch_revisions(tab.url);
+      fetch_html(replay_url, datetime);
     });
   }
 }
@@ -30,6 +51,7 @@ function onClicked() {
   });
   querying.then(logTabs, onError);
 }
+
 browser.browserAction.onClicked.addListener(onClicked);
 
 
@@ -37,11 +59,11 @@ browser.browserAction.onClicked.addListener(onClicked);
  * Add a listener on the browser messages.
  */
 function handleMessage(request, sender, sendResponse) {
-  if (request.cmd === 'fetch-revisions') {
-    sendResponse({response: 'fetch-revisions in the background'});
-    fetch_revisions(request);
+  if (request.cmd === 'cmd') {
+    sendResponse({response: 'cmd in the background'});
   }
 }
+
 browser.runtime.onMessage.addListener(handleMessage);
 
 /*
@@ -79,42 +101,54 @@ function replay_substitutions(url) {
   return new_url;
 }
 
-function fetch_revisions(url) {
+function fetch_revisions(requestDetails) {
   // Using Memento Aggregator
-  var timemap_url = `http://labs.mementoweb.org/timemap/link/${url}`;
+  var timemap_url = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
   console.log(`timemap ${timemap_url}`);
 
   fetch(timemap_url).then((response) => {
-    if(response.ok) {
+    if (response.ok) {
       return response.text();
     }
     throw new Error('Network response was not ok.');
   }).then((links) => {
     var entries = parse_memento(links);
     if (entries.length > 0) {
-      var replay_url = replay_substitutions(entries[0].url);
-      var datetime = entries[0].datetime;
+      replay_url = replay_substitutions(entries[0].url);
+      datetime = entries[0].datetime;
       console.log(`replay ${datetime} ${replay_url}`);
-
-      fetch(replay_url).then((response) => {
-        if(response.ok) {
-          return response.text();
-        }
-        throw new Error('Network response was not ok.');
-      }).then((html_string) => {
-        var p = new DOMParser();
-        var doc = p.parseFromString(html_string, 'text/html');
-        var article = new Readability(doc).parse();
-
-        notifyActiveTab({
-          cmd: 'response-revisions',
-          datetime,
-          article
+      var querying = browser.tabs.query({
+        currentWindow: true,
+        active: true
+      });
+      querying.then((tabs) => {
+        browser.browserAction.setIcon({
+          tabId: tabs[0].id,
+          path: "revisionist_extension_on.png"
         });
-      }).catch((error) => {
-        console.log('There has been a problem with your fetch operation: ', error.message);
       });
     }
+  }).catch((error) => {
+    console.log('There has been a problem with your fetch operation: ', error.message);
+  });
+}
+
+function fetch_html(replay_url, datetime) {
+  fetch(replay_url).then((response) => {
+    if (response.ok) {
+      return response.text();
+    }
+    throw new Error('Network response was not ok.');
+  }).then((html_string) => {
+    var p = new DOMParser();
+    var doc = p.parseFromString(html_string, 'text/html');
+    var article = new Readability(doc).parse();
+
+    notifyActiveTab({
+      cmd: 'response-revisions',
+      datetime,
+      article
+    });
   }).catch((error) => {
     console.log('There has been a problem with your fetch operation: ', error.message);
   });
