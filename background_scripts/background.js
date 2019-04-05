@@ -1,17 +1,16 @@
-let fetch_retry = require('fetch-retry');
+var fetchRetry = require('fetch-retry');
 
 var replay_url;
 var datetime;
 
 function logResponseHeaders(requestDetails) {
-  if (requestDetails.originUrl == undefined) {
+  if (requestDetails.type == 'main_frame') {
     console.log(`fetch-revisions in the background for ${requestDetails.url}`);
     fetch_revisions(requestDetails);
   }
 }
 
 function startListening() {
-  console.log("startListening()")
   browser.webRequest.onCompleted.addListener(
     logResponseHeaders,
     {urls: ["<all_urls>"]},
@@ -108,7 +107,7 @@ function fetch_revisions(requestDetails) {
   var timemap_url = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
   console.log(`timemap ${timemap_url}`);
 
-  fetch_retry(timemap_url, {
+  fetchRetry(timemap_url, {
     retries: 3,
     retryDelay: 1000
   }).then((response) => {
@@ -139,7 +138,7 @@ function fetch_revisions(requestDetails) {
 }
 
 function fetch_html(replay_url, datetime) {
-  fetch_retry(replay_url, {
+  fetchRetry(replay_url, {
     retries: 3,
     retryDelay: 1000
   }).then((response) => {
