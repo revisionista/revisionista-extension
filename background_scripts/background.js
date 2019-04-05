@@ -1,7 +1,7 @@
-var fetchRetry = require('fetch-retry');
+let fetchRetry = require('fetch-retry');
 
-var replayUrl;
-var datetime;
+let replayUrl;
+let datetime;
 
 function logResponseHeaders(requestDetails) {
   if (requestDetails.type == 'main_frame') {
@@ -46,7 +46,7 @@ function onError(error) {
  * Add a listener on the browser action.
  */
 function onClicked() {
-  var querying = browser.tabs.query({
+  let querying = browser.tabs.query({
     currentWindow: true,
     active: true
   });
@@ -70,22 +70,22 @@ browser.runtime.onMessage.addListener(handleMessage);
 /*
  * Parse the Memento response.
  */
-function parse_memento(data) {
+function parseMemento(data) {
   if (data.length == 0) {
     throw new Error("input must not be of zero length");
   }
 
-  var entries = [];
-  var items = data.split('\n')
+  let entries = [];
+  let items = data.split('\n')
   items.forEach((item) => {
-    var memento = item.split(';');
+    let memento = item.split(';');
     if (memento.length < 2) {
       throw new Error("memento could not be split on ';'");
     }
-    var url = memento[0].replace(/<(.*)>/, '$1').trim();
-    var name = memento[1].replace(/rel="(.*)"/, '$1').trim();
+    let url = memento[0].replace(/<(.*)>/, '$1').trim();
+    let name = memento[1].replace(/rel="(.*)"/, '$1').trim();
     if (memento.length > 2 && name === "memento") {
-      var datetime = memento[2].replace(/datetime="(.*)",/, '$1').trim();
+      let datetime = memento[2].replace(/datetime="(.*)",/, '$1').trim();
       entries.push({'url': url, 'name': name, 'datetime': datetime});
     }
   });
@@ -94,20 +94,20 @@ function parse_memento(data) {
 }
 
 function replayUrlSubstitutions(url) {
-  let new_url = url;
-  new_url.replace(
+  let newUrl = url;
+  newUrl.replace(
     "https://arquivo.pt/wayback/",
     "https://arquivo.pt/noFrame/replay/"
   );
-  return new_url;
+  return newUrl;
 }
 
 function fetchTimemap(requestDetails) {
   // Using Memento Aggregator
-  var timemap_url = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
-  console.log(`timemap ${timemap_url}`);
+  let timemapUrl = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
+  console.log(`timemap ${timemapUrl}`);
 
-  fetchRetry(timemap_url, {
+  fetchRetry(timemapUrl, {
     retries: 3,
     retryDelay: 1000
   }).then((response) => {
@@ -116,7 +116,7 @@ function fetchTimemap(requestDetails) {
     }
     throw new Error('Network response was not ok.');
   }).then((links) => {
-    var entries = parse_memento(links);
+    let entries = parseMemento(links);
     if (entries.length > 0) {
       replayUrl = replayUrlSubstitutions(entries[0].url);
       datetime = entries[0].datetime;
@@ -131,8 +131,8 @@ function fetchTimemap(requestDetails) {
   });
 }
 
-function fetchReplay(replay_url, datetime) {
-  fetchRetry(replay_url, {
+function fetchReplay(replayUrl, datetime) {
+  fetchRetry(replayUrl, {
     retries: 3,
     retryDelay: 1000
   }).then((response) => {
@@ -140,10 +140,10 @@ function fetchReplay(replay_url, datetime) {
       return response.text();
     }
     throw new Error('Network response was not ok.');
-  }).then((html_string) => {
-    var p = new DOMParser();
-    var doc = p.parseFromString(html_string, 'text/html');
-    var article = new Readability(doc).parse();
+  }).then((textHtml) => {
+    let p = new DOMParser();
+    let doc = p.parseFromString(textHtml, 'text/html');
+    let article = new Readability(doc).parse();
 
     notifyActiveTab({
       cmd: 'response-revisions',
@@ -164,12 +164,12 @@ function handleError(error) {
 }
 
 function notifyActiveTab(message) {
-  var querying = browser.tabs.query({
+  let querying = browser.tabs.query({
     currentWindow: true,
     active: true
   });
   querying.then((tabs) => {
-    var sending = browser.tabs.sendMessage(tabs[0].id, message);
+    let sending = browser.tabs.sendMessage(tabs[0].id, message);
     sending.then(handleResponse, handleError);
   });
 }
