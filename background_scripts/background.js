@@ -1,6 +1,10 @@
 const tldjs = require('tldjs');
 const fetchRetry = require('fetch-retry');
 
+const TITLE_DEFAULT = "Revisionista";
+const TITLE_OPENED = "Revisionista X";
+const FIREFOX_DEFAULT_BADGE_COLOR = "rgb(217,0,0)";
+const CHROME_DEFAULT_BADGE_COLOR = "rgb(89,124,242)";
 const MEMENTOWEB_URL = "http://labs.mementoweb.org/timemap/link/";
 const ARQUIVO_PT_URL = "https://arquivo.pt/wayback/timemap/*/";
 const NOTIFY_ON_TLDS = new Set(['pt']);
@@ -9,23 +13,29 @@ let cache = {};
 
 function logTabs(tabs) {
   for (let tab of tabs) {
-    if (tab.url in cache) {
-      executeScripts(
-        tab.id,
-        [
-          {file: "/vendor/diff_match_patch_uncompressed.js"},
-          {file: "/vendor/diff_match_patch_extras.js"},
-          {file: "/vendor/Readability.js"},
-          {file: "/content_scripts/viewer.js"}
-        ]
-      ).then(() => {
-        console.log(`fetchReplay in the background for ${tab.url}`);
-        let earliest = cache[tab.url];
-        fetchReplay(earliest.replayUrl, earliest.datetime);
-      });
-    } else {
-      fetchTimemap(tab);
-    }
+    browser.browserAction.getTitle({
+      tabId: tab.id
+    }).then((title) => {
+      // bail if the viewer is already opened
+      if (title != 'Revisionista') return;
+      if (tab.url in cache) {
+        executeScripts(
+          tab.id,
+          [
+            {file: "/vendor/diff_match_patch_uncompressed.js"},
+            {file: "/vendor/diff_match_patch_extras.js"},
+            {file: "/vendor/Readability.js"},
+            {file: "/content_scripts/viewer.js"}
+          ]
+        ).then(() => {
+          console.log(`fetchReplay in the background for ${tab.url}`);
+          let earliest = cache[tab.url];
+          fetchReplay(earliest.replayUrl, earliest.datetime);
+        });
+      } else {
+        fetchTimemap(tab);
+      }
+    });
   }
 }
 
@@ -48,6 +58,13 @@ browser.browserAction.onClicked.addListener(onClicked);
 
 browser.tabs.onCreated.addListener(() => {
   browser.browserAction.disable();
+  browser.browserAction.setTitle({
+    title: TITLE_DEFAULT
+  });
+  // For consistent color in any browser.
+  browser.browserAction.setBadgeBackgroundColor({
+    color: FIREFOX_DEFAULT_BADGE_COLOR
+  });
 });
 
 function onReaderable(request, sender) {
@@ -181,9 +198,17 @@ function notifyActiveTab(message) {
     let tabId = tabs[0].id;
     let sending = browser.tabs.sendMessage(tabId, message);
     sending.then(handleResponse, handleError);
+    browser.browserAction.setTitle({
+      tabId: tabId,
+      title: TITLE_OPENED
+    });
     browser.browserAction.setIcon({
       tabId: tabId,
       path: "revisionist_extension_on.png"
+    });
+    browser.browserAction.setBadgeBackgroundColor({
+      tabId: tabId,
+      color: CHROME_DEFAULT_BADGE_COLOR
     });
   });
 }
