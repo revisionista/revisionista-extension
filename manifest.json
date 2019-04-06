@@ -26,6 +26,9 @@
     "matches": [
       "<all_urls>"
     ],
+    "css": [
+      "content_scripts/main.css"
+    ],
     "js": [
       "vendor/browser-polyfill.min.js",
       "vendor/Readability-readerable.js",

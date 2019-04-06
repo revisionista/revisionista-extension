@@ -1,0 +1,10 @@
+.readability-iframe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  border: 0;
+  z-index: 9999999;
+  overflow: hidden;
+}

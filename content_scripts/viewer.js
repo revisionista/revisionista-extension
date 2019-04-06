@@ -166,6 +166,17 @@ function handleMessage(request, sender, sendResponse) {
     document.getElementById('readability-2-content').innerHTML = article.content;
     diff_title();
     diff_content();
+    var iframe = document.createElement('iframe');
+    iframe.className = "readability-iframe";
+    iframe.frameBorder = "0";
+    iframe.scrolling = "no";
+    iframe.onload = onLoad(iframe);
+    iframe.src = "http://127.0.0.1:8000/";
+    document.body.appendChild(iframe);
+
+    function onLoad(iframe) {
+      console.log("loaded");
+    }
   }
 }
 browser.runtime.onMessage.addListener(handleMessage);
