@@ -1,11 +1,8 @@
 let fetchRetry = require('fetch-retry');
+let cache = {};
 
 const MEMENTOWEB_URL = "http://labs.mementoweb.org/timemap/link/";
 const ARQUIVO_PT_URL = "https://arquivo.pt/wayback/timemap/*/";
-
-let isOpened = false;
-let replayUrl;
-let datetime;
 
 function logTabs(tabs) {
   for (let tab of tabs) {
@@ -19,7 +16,10 @@ function logTabs(tabs) {
       ]
     ).then(() => {
       console.log(`fetchHtml in the background for ${tab.url}`);
-      fetchReplay(replayUrl, datetime);
+      if (tab.url in cache) {
+        let earliest = cache[tab.url];
+        fetchReplay(earliest.replayUrl, earliest.datetime);
+      }
     });
   }
 }
@@ -112,9 +112,12 @@ function fetchTimemap(tab) {
   }).then((links) => {
     let entries = parseMemento(links);
     if (entries.length > 0) {
-      replayUrl = replayUrlSubstitutions(entries[0].url);
-      datetime = entries[0].datetime;
-      console.log(`replay ${replayUrl} ${datetime}`);
+      let earliest = {
+        replayUrl: replayUrlSubstitutions(entries[0].url),
+        datetime: entries[0].datetime
+      };
+      cache[tab.url] = earliest;
+      console.log(`replay ${earliest.replayUrl} ${earliest.datetime}`);
       browser.browserAction.enable(tab.id);
       browser.browserAction.setBadgeText({
         tabId: tab.id,
@@ -172,6 +175,5 @@ function notifyActiveTab(message) {
       tabId: tabId,
       path: "revisionist_extension_on.png"
     });
-    isOpened = true;
   });
 }
