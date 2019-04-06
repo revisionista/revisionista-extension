@@ -1,5 +1,8 @@
 let fetchRetry = require('fetch-retry');
 
+const MEMENTOWEB_URL = "http://labs.mementoweb.org/timemap/link/";
+const ARQUIVO_PT_URL = "https://arquivo.pt/wayback/timemap/*/";
+
 let isOpened = false;
 let replayUrl;
 let datetime;
@@ -33,11 +36,7 @@ function onClicked() {
     currentWindow: true,
     active: true
   });
-  if (!isOpened) {
-    querying.then(logTabs, onError);
-  } else {
-    console.log(`Already fetched ${replayUrl}`);
-  }
+  querying.then(logTabs, onError);
 }
 
 browser.browserAction.onClicked.addListener(onClicked);
@@ -54,6 +53,7 @@ function onReaderable(request, sender) {
  * Add a listener on the browser messages.
  */
 function handleMessage(request, sender, sendResponse) {
+  sendResponse({response: `received cmd ${request.cmd}`});
   if (request.cmd === 'probablyReaderable') {
     onReaderable(request, sender);
   }
@@ -97,13 +97,13 @@ function replayUrlSubstitutions(url) {
 }
 
 function fetchTimemap(tab) {
-  // Using Memento Aggregator
-  let timemapUrl = `http://labs.mementoweb.org/timemap/link/${tab.url}`;
+  let timemapUrl = ARQUIVO_PT_URL + `${tab.url}`;
   console.log(`timemap ${timemapUrl}`);
 
   fetchRetry(timemapUrl, {
     retries: 3,
-    retryDelay: 1000
+    retryDelay: 1000,
+    retryOn: [500, 502, 503, 504]
   }).then((response) => {
     if (response.ok) {
       return response.text();
@@ -129,7 +129,8 @@ function fetchTimemap(tab) {
 function fetchReplay(replayUrl, datetime) {
   fetchRetry(replayUrl, {
     retries: 3,
-    retryDelay: 1000
+    retryDelay: 1000,
+    retryOn: [500, 502, 503, 504]
   }).then((response) => {
     if (response.ok) {
       return response.text();
