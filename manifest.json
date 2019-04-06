@@ -23,8 +23,13 @@
     ]
   },
   "content_scripts": [{
+    "match_about_blank": true,
+    "all_frames": true,
     "matches": [
       "<all_urls>"
+    ],
+    "css": [
+      "content_scripts/main.css"
     ],
     "js": [
       "vendor/browser-polyfill.min.js",
@@ -32,5 +37,8 @@
       "content_scripts/content.js"
     ]
   }],
+  "web_accessible_resources":[
+    "templates/diff.html"
+  ],
   "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/*; object-src 'self';"
 }

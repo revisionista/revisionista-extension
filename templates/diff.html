@@ -1,0 +1,45 @@
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>{{ title_1 }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.4/tufte.min.css"/>
+    <style>
+      h1 {
+        line-height: 1.2;
+      }
+      del {
+        color: #b31d28;
+        background-color: #ffeef0;
+      }
+      ins {
+        color: #22863a;
+        background-color: #f0fff4;
+      }
+      del + ins {
+        color: #b58900;
+        background-color: #fdf6e3;
+      }
+    </style>
+  </head>
+  <body>
+    <article id="readability-container">
+      <h1 id="readability-1-title">{{ title_1 }}</h1>
+      <section id="readability-subtitle">
+      <p>
+        <span class="marginnote"><i id="readability-datetime"></i></span>
+        <span class="marginnote">
+          Green text, is a widely recognizable <ins>added-text</ins> indicator.
+          Red text, is also easily recognized as <del>removed-text</del><ins>removed-text, while Orange text is used to indicate replacement.</ins>
+        </span>
+      </p>
+      </section>
+      <section id="readability-1-content">{{ page_1|safe }}</section>
+      <h1 id="readability-2-title">{{ title_2 }}</h1>
+      <section id="readability-2-content">{{ page_2|safe }}</section>
+    </article>
+
+    <script src="viewer.js"></script>
+  </body>
+</html>

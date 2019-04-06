@@ -25,7 +25,7 @@ function logTabs(tabs) {
             {file: "/vendor/diff_match_patch_uncompressed.js"},
             {file: "/vendor/diff_match_patch_extras.js"},
             {file: "/vendor/Readability.js"},
-            {file: "/content_scripts/viewer.js"}
+            {file: "/content_scripts/loader.js"}
           ]
         ).then(() => {
           console.log(`fetchReplay in the background for ${tab.url}`);
