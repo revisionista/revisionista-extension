@@ -16,7 +16,8 @@
   "scripts": {
     "test": "eslint .",
     "lint": "eslint .",
-    "browserify-build": "browserify -x fetch -r fetch-retry -o ./vendor/fetch-retry-browserified.js"
+    "fetch-retry-build": "browserify -x fetch -r fetch-retry -o ./vendor/fetch-retry-browserified.js",
+    "tldjs-build": "browserify -x tldjs -r tldjs -o ./vendor/tldjs-browserified.js"
   },
   "license": "MIT",
   "bugs": {
