@@ -1,26 +1,31 @@
-let fetchRetry = require('fetch-retry');
-let cache = {};
+const tldjs = require('tldjs');
+const fetchRetry = require('fetch-retry');
 
 const MEMENTOWEB_URL = "http://labs.mementoweb.org/timemap/link/";
 const ARQUIVO_PT_URL = "https://arquivo.pt/wayback/timemap/*/";
+const NOTIFY_ON_TLDS = new Set(['pt']);
+
+let cache = {};
 
 function logTabs(tabs) {
   for (let tab of tabs) {
-    executeScripts(
-      tab.id,
-      [
-        {file: "/vendor/diff_match_patch_uncompressed.js"},
-        {file: "/vendor/diff_match_patch_extras.js"},
-        {file: "/vendor/Readability.js"},
-        {file: "/content_scripts/viewer.js"}
-      ]
-    ).then(() => {
-      console.log(`fetchHtml in the background for ${tab.url}`);
-      if (tab.url in cache) {
+    if (tab.url in cache) {
+      executeScripts(
+        tab.id,
+        [
+          {file: "/vendor/diff_match_patch_uncompressed.js"},
+          {file: "/vendor/diff_match_patch_extras.js"},
+          {file: "/vendor/Readability.js"},
+          {file: "/content_scripts/viewer.js"}
+        ]
+      ).then(() => {
+        console.log(`fetchReplay in the background for ${tab.url}`);
         let earliest = cache[tab.url];
         fetchReplay(earliest.replayUrl, earliest.datetime);
-      }
-    });
+      });
+    } else {
+      fetchTimemap(tab);
+    }
   }
 }
 
@@ -46,7 +51,13 @@ browser.tabs.onCreated.addListener(() => {
 });
 
 function onReaderable(request, sender) {
-  fetchTimemap(sender.tab);
+  let tab = sender.tab;
+  browser.browserAction.enable(tab.id);
+
+  let tld = tldjs.getPublicSuffix(tab.url);
+  if (NOTIFY_ON_TLDS.has(tld)) {
+    fetchTimemap(tab);
+  }
 }
 
 /**
@@ -118,7 +129,6 @@ function fetchTimemap(tab) {
       };
       cache[tab.url] = earliest;
       console.log(`replay ${earliest.replayUrl} ${earliest.datetime}`);
-      browser.browserAction.enable(tab.id);
       browser.browserAction.setBadgeText({
         tabId: tab.id,
         text: entries.length.toString()
