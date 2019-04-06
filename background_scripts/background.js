@@ -1,35 +1,18 @@
 let fetchRetry = require('fetch-retry');
 
+let isOpened = false;
 let replayUrl;
 let datetime;
-
-function logResponseHeaders(requestDetails) {
-  if (requestDetails.type == 'main_frame') {
-    console.log(`fetchTimemap ${requestDetails.url}`);
-    fetchTimemap(requestDetails);
-  }
-}
-
-function startListening() {
-  browser.webRequest.onCompleted.addListener(
-    logResponseHeaders,
-    {urls: ["<all_urls>"]},
-    ["responseHeaders"]
-  );
-}
-
-startListening();
 
 function logTabs(tabs) {
   for (let tab of tabs) {
     executeScripts(
       tab.id,
       [
-        {file: "/vendor/browser-polyfill.min.js"},
         {file: "/vendor/diff_match_patch_uncompressed.js"},
         {file: "/vendor/diff_match_patch_extras.js"},
         {file: "/vendor/Readability.js"},
-        {file: "/content_scripts/content.js"}
+        {file: "/content_scripts/viewer.js"}
       ]
     ).then(() => {
       console.log(`fetchHtml in the background for ${tab.url}`);
@@ -50,18 +33,29 @@ function onClicked() {
     currentWindow: true,
     active: true
   });
-  querying.then(logTabs, onError);
+  if (!isOpened) {
+    querying.then(logTabs, onError);
+  } else {
+    console.log(`Already fetched ${replayUrl}`);
+  }
 }
 
 browser.browserAction.onClicked.addListener(onClicked);
 
+browser.tabs.onCreated.addListener(() => {
+  browser.browserAction.disable();
+});
+
+function onReaderable(request, sender) {
+  fetchTimemap(sender.tab);
+}
 
 /**
  * Add a listener on the browser messages.
  */
 function handleMessage(request, sender, sendResponse) {
-  if (request.cmd === 'cmd') {
-    sendResponse({response: 'cmd in the background'});
+  if (request.cmd === 'probablyReaderable') {
+    onReaderable(request, sender);
   }
 }
 
@@ -102,9 +96,9 @@ function replayUrlSubstitutions(url) {
   return newUrl;
 }
 
-function fetchTimemap(requestDetails) {
+function fetchTimemap(tab) {
   // Using Memento Aggregator
-  let timemapUrl = `http://labs.mementoweb.org/timemap/link/${requestDetails.url}`;
+  let timemapUrl = `http://labs.mementoweb.org/timemap/link/${tab.url}`;
   console.log(`timemap ${timemapUrl}`);
 
   fetchRetry(timemapUrl, {
@@ -121,9 +115,10 @@ function fetchTimemap(requestDetails) {
       replayUrl = replayUrlSubstitutions(entries[0].url);
       datetime = entries[0].datetime;
       console.log(`replay ${replayUrl} ${datetime}`);
-      browser.browserAction.setIcon({
-        tabId: requestDetails.tabId,
-        path: "revisionist_extension_on.png"
+      browser.browserAction.enable(tab.id);
+      browser.browserAction.setBadgeText({
+        tabId: tab.id,
+        text: entries.length.toString()
       });
     }
   }).catch((error) => {
@@ -169,7 +164,13 @@ function notifyActiveTab(message) {
     active: true
   });
   querying.then((tabs) => {
-    let sending = browser.tabs.sendMessage(tabs[0].id, message);
+    let tabId = tabs[0].id;
+    let sending = browser.tabs.sendMessage(tabId, message);
     sending.then(handleResponse, handleError);
+    browser.browserAction.setIcon({
+      tabId: tabId,
+      path: "revisionist_extension_on.png"
+    });
+    isOpened = true;
   });
 }
