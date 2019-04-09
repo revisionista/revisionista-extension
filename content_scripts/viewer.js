@@ -67,9 +67,23 @@ var head_template = `
     h1 {
       line-height: 1.2;
     }
+
     del {
+      text-decoration: line-through;
       color: #b31d28;
-      background-color: #ffeef0;
+      transition: background-position 0.15s linear 0.1s, box-shadow 0.15s linear 0s;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+
+    del:hover {
+      text-decoration: none;
+      color: #b31d28;
+      transition: background-position 0.15s linear 0.1s, box-shadow 0.15s linear 0s;
+      background-image: linear-gradient(to bottom, #ffeef0 0%, #ffeef0 100%);
+      background-position: 0 0em;
+      box-shadow: 0.2em 0 0 #ffeef0, -0.2em 0 0 #ffeef0;
     }
 
     ins {
