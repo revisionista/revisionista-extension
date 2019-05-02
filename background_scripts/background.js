@@ -204,11 +204,18 @@ function notifyActiveTab(message) {
     });
     browser.browserAction.setIcon({
       tabId: tabId,
-      path: "revisionist_extension_on.png"
+      path: {
+        16: "icons/on_icon16.png",
+        19: "icons/on_icon19.png",
+        32: "icons/on_icon32.png",
+        38: "icons/on_icon38.png",
+        48: "icons/on_icon48.png",
+        128: "icons/on_icon48.png"
+      }
     });
     browser.browserAction.setBadgeBackgroundColor({
       tabId: tabId,
-      color: CHROME_DEFAULT_BADGE_COLOR
+      color: FIREFOX_DEFAULT_BADGE_COLOR
     });
   });
 }
