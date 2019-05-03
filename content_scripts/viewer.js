@@ -90,11 +90,6 @@ var head_template = `
       color: #22863a;
       background-color: #f0fff4;
     }
-
-    del + ins {
-      color: #b58900;
-      background-color: #fdf6e3;
-    }
   </style>
 `
 
@@ -103,10 +98,14 @@ var body_template = `
     <h1 id="readability-1-title">${article.title}</h1>
     <section id="readability-subtitle">
     <p>
-      <span class="marginnote"><i id="readability-datetime"></i></span>
       <span class="marginnote">
-        Green text, is a widely recognizable <ins>added-text</ins> indicator.
-        Red text, is also easily recognized as <del>removed-text</del><ins>removed-text, while Orange text is used to indicate replacement.</ins> 
+        <i id="readability-datetime"></i>
+       </span>
+      <span class="marginnote">
+        O texto <ins>adicionado</ins> surge destacado a verde.
+      </span>
+      <span class="marginnote">
+        O texto <del>removido</del> surge destacado a vermelho.
       </span>
     </p>
     </section>
@@ -174,7 +173,7 @@ function handleMessage(request, sender, sendResponse) {
   if (request.cmd === 'response-revisions') {
     sendResponse({response: "received-revisions"});
     var datetime = request.datetime;
-    document.getElementById('readability-datetime').textContent = `Snapshot from ${datetime}`;
+    document.getElementById('readability-datetime').textContent = `Arquivada em ${datetime}`;
     var article = request.article;
     document.getElementById('readability-2-title').textContent = article.title;
     document.getElementById('readability-2-content').innerHTML = article.content;
