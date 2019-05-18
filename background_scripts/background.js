@@ -210,7 +210,7 @@ function notifyActiveTab(message) {
         32: "icons/on_icon32.png",
         38: "icons/on_icon38.png",
         48: "icons/on_icon48.png",
-        128: "icons/on_icon48.png"
+        128: "icons/on_icon128.png"
       }
     });
     browser.browserAction.setBadgeBackgroundColor({

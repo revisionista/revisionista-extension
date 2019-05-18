@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Revisionista",
   "description" : "Revisionista Browser Extension",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "permissions": [
     "tabs",
     "activeTab",
@@ -21,7 +21,7 @@
       "32": "icons/icon32.png",
       "38": "icons/icon38.png",
       "48": "icons/icon48.png",
-      "128": "icons/icon48.png"
+      "128": "icons/icon128.png"
     }
   },
   "background": {
