@@ -13,6 +13,6 @@ function notifyBackgroundPage(message) {
 
 let probablyReaderable = isProbablyReaderable(document);
 notifyBackgroundPage({
-  cmd: 'probablyReaderable',
+  cmd: "probablyReaderable",
   probablyReaderable
 });

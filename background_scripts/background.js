@@ -1,5 +1,5 @@
-const tldjs = require('tldjs');
-const fetchRetry = require('fetch-retry');
+const tldjs = require("tldjs");
+const fetchRetry = require("fetch-retry");
 
 const TITLE_DEFAULT = "Revisionista";
 const TITLE_OPENED = "Revisionista X";
@@ -7,7 +7,7 @@ const FIREFOX_DEFAULT_BADGE_COLOR = "rgb(217,0,0)";
 const CHROME_DEFAULT_BADGE_COLOR = "rgb(89,124,242)";
 const MEMENTOWEB_URL = "http://labs.mementoweb.org/timemap/link/";
 const ARQUIVO_PT_URL = "https://arquivo.pt/wayback/timemap/*/";
-const NOTIFY_ON_TLDS = new Set(['pt']);
+const NOTIFY_ON_TLDS = new Set(["pt"]);
 
 let cache = {};
 
@@ -17,8 +17,10 @@ function logTabs(tabs) {
       tabId: tab.id
     }).then((title) => {
       // bail if the viewer is already opened
-      if (title != 'Revisionista') return;
+      if (title != "Revisionista") return;
       if (tab.url in cache) {
+        browser.tabs.insertCSS(tab.id, {"cssOrigin": "user", "file": "et-book.css"});
+        browser.tabs.insertCSS(tab.id, {"cssOrigin": "user", "file": "tufte.css"});
         executeScripts(
           tab.id,
           [
@@ -82,7 +84,7 @@ function onReaderable(request, sender) {
  */
 function handleMessage(request, sender, sendResponse) {
   sendResponse({response: `received cmd ${request.cmd}`});
-  if (request.cmd === 'probablyReaderable') {
+  if (request.cmd === "probablyReaderable") {
     onReaderable(request, sender);
   }
 }
@@ -98,17 +100,17 @@ function parseMemento(data) {
   }
 
   let entries = [];
-  let items = data.split('\n')
+  let items = data.split("\n")
   items.forEach((item) => {
-    let memento = item.split(';');
+    let memento = item.split(";");
     if (memento.length < 2) {
       throw new Error("memento could not be split on ';'");
     }
-    let url = memento[0].replace(/<(.*)>/, '$1').trim();
-    let name = memento[1].replace(/rel="(.*)"/, '$1').trim();
+    let url = memento[0].replace(/<(.*)>/, "$1").trim();
+    let name = memento[1].replace(/rel="(.*)"/, "$1").trim();
     if (memento.length > 2 && name === "memento") {
-      let datetime = memento[2].replace(/datetime="(.*)",/, '$1').trim();
-      entries.push({'url': url, 'name': name, 'datetime': datetime});
+      let datetime = memento[2].replace(/datetime="(.*)",/, "$1").trim();
+      entries.push({"url": url, "name": name, "datetime": datetime});
     }
   });
 
@@ -136,7 +138,7 @@ function fetchTimemap(tab) {
     if (response.ok) {
       return response.text();
     }
-    throw new Error('Network response was not ok.');
+    throw new Error("Network response was not ok.");
   }).then((links) => {
     let entries = parseMemento(links);
     if (entries.length > 0) {
@@ -152,7 +154,7 @@ function fetchTimemap(tab) {
       });
     }
   }).catch((error) => {
-    console.log('There has been a problem with your fetch operation: ', error.message);
+    console.log("There has been a problem with your fetch operation: ", error.message);
   });
 }
 
@@ -165,19 +167,19 @@ function fetchReplay(replayUrl, datetime) {
     if (response.ok) {
       return response.text();
     }
-    throw new Error('Network response was not ok.');
+    throw new Error("Network response was not ok.");
   }).then((textHtml) => {
     let p = new DOMParser();
-    let doc = p.parseFromString(textHtml, 'text/html');
+    let doc = p.parseFromString(textHtml, "text/html");
     let article = new Readability(doc).parse();
 
     notifyActiveTab({
-      cmd: 'response-revisions',
+      cmd: "response-revisions",
       datetime,
       article
     });
   }).catch((error) => {
-    console.log('There has been a problem with your fetch operation: ', error.message);
+    console.log("There has been a problem with your fetch operation: ", error.message);
   });
 }
 

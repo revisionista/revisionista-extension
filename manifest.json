@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Revisionista",
   "description" : "Revisionista Browser Extension",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "permissions": [
     "tabs",
     "activeTab",
@@ -26,7 +26,7 @@
   },
   "background": {
     "scripts": [
-      "vendor/browser-polyfill.min.js",
+      "vendor/browser-polyfill.js",
       "vendor/executeScript-helper.js",
       "vendor/fetch-retry-browserified.js",
       "vendor/tldjs-browserified.js",
@@ -39,10 +39,12 @@
       "<all_urls>"
     ],
     "js": [
-      "vendor/browser-polyfill.min.js",
+      "vendor/browser-polyfill.js",
       "vendor/Readability-readerable.js",
       "content_scripts/content.js"
     ]
   }],
-  "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/*; object-src 'self';"
+  "web_accessible_resources": [
+    "et-book/*"
+  ]
 }

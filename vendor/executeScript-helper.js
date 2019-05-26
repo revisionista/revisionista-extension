@@ -15,7 +15,7 @@ const executeScripts = (tabId, scripts) => {
         }
         execute();
       } else {
-        throw new Error('scripts(array) undefined or empty');
+        throw new Error("scripts(array) undefined or empty");
       }
     } catch (err) {
       reject(err);
