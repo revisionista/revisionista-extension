@@ -1,2 +1,2 @@
-Revisionist Extension
+Revisionista Extension
 --
