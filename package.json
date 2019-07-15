@@ -1,12 +1,12 @@
 {
   "name": "revisionist",
   "title": "Revisionist Extension",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Revisionist WebExtension",
   "devDependencies": {
     "browserify": "^13.0.0",
     "eslint": "^4.4.1",
-    "fetch-retry": "^2.0.0",
+    "fetch-retry": "^2.2.1",
     "tldjs": "^2.3.1"
   },
   "repository": {
@@ -17,7 +17,7 @@
     "test": "eslint .",
     "lint": "eslint .",
     "fetch-retry-build": "browserify -x fetch -r fetch-retry -o ./vendor/fetch-retry-browserified.js",
-    "tldjs-build": "browserify -x tldjs -r tldjs -o ./vendor/tldjs-browserified.js"
+    "tldjs-build": "browserify -x getPublicSuffix -r tldjs -o ./vendor/tldjs-browserified.js"
   },
   "license": "MIT",
   "bugs": {
