@@ -100,7 +100,7 @@ function parseMemento(data) {
   }
 
   let entries = [];
-  let items = data.split("\n")
+  let items = data.split("\n").filter(function(el) { return el; });
   items.forEach((item) => {
     let memento = item.split(";");
     if (memento.length < 2) {

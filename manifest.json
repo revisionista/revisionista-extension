@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Revisionista",
   "description" : "Revisionista Browser Extension",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "permissions": [
     "tabs",
     "activeTab",
