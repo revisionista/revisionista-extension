@@ -5,7 +5,7 @@
   "description": "Revisionist WebExtension",
   "devDependencies": {
     "browserify": "^13.0.0",
-    "eslint": "^4.4.1",
+    "eslint": "^4.19.1",
     "fetch-retry": "^2.2.2",
     "tldjs": "^2.3.1",
     "webextension-polyfill": "^0.4.0"
