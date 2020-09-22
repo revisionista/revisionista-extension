@@ -1,18 +1,19 @@
 {
-  "name": "revisionist",
-  "title": "Revisionist Extension",
-  "version": "1.0.6",
-  "description": "Revisionist WebExtension",
+  "name": "revisionista",
+  "title": "Revisionista Extension",
+  "version": "1.0.8",
+  "description": "Revisionista WebExtension",
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "eslint": "^4.19.1",
-    "fetch-retry": "^2.2.2",
+    "babel-eslint": "^10.1.0",
+    "browserify": "^16.5.2",
+    "eslint": "^7.9.0",
+    "fetch-retry": "^2.2.3",
     "tldjs": "^2.3.1",
-    "webextension-polyfill": "^0.4.0"
+    "webextension-polyfill": "^0.6.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flaviomartins/revisionist_extension.git"
+    "url": "git+https://github.com/revisionista/revisionista-extension.git"
   },
   "scripts": {
     "test": "eslint .",
@@ -22,7 +23,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/flaviomartins/revisionist_extension/issues"
+    "url": "https://github.com/revisionista/revisionista-extension/issues"
   },
   "keywords": [
     "web",
@@ -30,8 +31,5 @@
     "news",
     "revisions"
   ],
-  "homepage": "https://flaviomartins.github.io/revisionist_extension",
-  "dependencies": {
-    "babel-eslint": "^7.2.3"
-  }
+  "homepage": "https://revisionista.pt"
 }
