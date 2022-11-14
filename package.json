@@ -7,7 +7,7 @@
     "babel-eslint": "^10.1.0",
     "browserify": "^16.5.2",
     "eslint": "^7.9.0",
-    "fetch-retry": "^2.2.3",
+    "fetch-retry": "^5.0.3",
     "tldjs": "^2.3.1",
     "webextension-polyfill": "^0.6.0"
   },
