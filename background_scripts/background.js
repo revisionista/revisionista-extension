@@ -1,5 +1,6 @@
 const tldjs = require("tldjs");
-const fetchRetry = require("fetch-retry");
+const fetch = require("isomorphic-fetch");
+const fetchRetry = require("fetch-retry")(fetch);
 
 const TITLE_DEFAULT = "Revisionista";
 const TITLE_OPENED = "Revisionista X";
@@ -100,7 +101,7 @@ function parseMemento(data) {
   }
 
   let entries = [];
-  let items = data.split("\n").filter(function(el) { return el; });
+  let items = data.split("\n").filter((el) => { return el; });
   items.forEach((item) => {
     let memento = item.split(";");
     if (memento.length < 2) {

@@ -1,27 +1,30 @@
 {
   "name": "revisionista",
   "title": "Revisionista Extension",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Revisionista WebExtension",
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "browserify": "^16.5.2",
-    "eslint": "^7.9.0",
-    "fetch-retry": "^5.0.3",
-    "tldjs": "^2.3.1",
-    "webextension-polyfill": "^0.6.0"
+    "@babel/core": "^7.28.0",
+    "@babel/eslint-parser": "^7.28.0",
+    "eslint": "^8.57.1",
+    "isomorphic-fetch": "^3.0.0",
+    "fetch-retry": "^6.0.0",
+    "tldjs": "^2.3.2",
+    "browserify": "^17.0.1",
+    "webextension-polyfill": "^0.12.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/revisionista/revisionista-extension.git"
   },
   "scripts": {
-    "test": "eslint .",
     "lint": "eslint .",
+    "fix": "eslint . --fix",
+    "fetch-build": "browserify -x fetch -r isomorphic-fetch -o ./vendor/fetch-browserified.js",
     "fetch-retry-build": "browserify -x fetch -r fetch-retry -o ./vendor/fetch-retry-browserified.js",
     "tldjs-build": "browserify -x getPublicSuffix -r tldjs -o ./vendor/tldjs-browserified.js"
   },
-  "license": "MIT",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/revisionista/revisionista-extension/issues"
   },
