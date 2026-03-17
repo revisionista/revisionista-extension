@@ -11,7 +11,7 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-        "id": "@revisionista-extension",
+        "id": "{08023c51-ff2b-4a56-b1df-ffa84d41d7b2}",
         "data_collection_permissions": {
           "required": [
              "locationInfo"
