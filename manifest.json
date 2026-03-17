@@ -9,6 +9,16 @@
     "contextMenus",
     "<all_urls>"
   ],
+  "browser_specific_settings": {
+    "gecko": {
+        "id": "@revisionista-extension",
+        "data_collection_permissions": {
+          "required": [
+             "locationInfo"
+          ]
+         }
+      }
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
